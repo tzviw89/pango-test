@@ -28,3 +28,23 @@ class ApiHelper:
         response = requests.get(url)
         print(response)
         return response
+
+    def get_weather_by_city_name(self, city_name):
+        url = f"{self.base_url}?q={city_name}&units=metric&appid={self.api_key}"
+        print(f"Requesting API: {url}")
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            temp = data.get('main', {}).get('temp')
+            if temp is not None:
+                return float(temp)
+            else:
+                print(f"API temp not found for {city_name}")
+                return None
+        except requests.exceptions.RequestException as err:
+            print(f"API Error for {city_name}: {err}")
+            return None
+        except Exception as err:
+            print(f"Unexpected API processing error for {city_name}: {err}")
+            return None
